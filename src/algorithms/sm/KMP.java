@@ -1,21 +1,40 @@
 package algorithms.sm;
 import java.util.ArrayList;
 import java.util.List;
+
 public class KMP {
+
+    private static long preprocessingComparisons = 0;
+    private static long searchComparisons = 0;
+
+    public static long getPreprocessingComparisons() {
+        return preprocessingComparisons;
+    }
+
+    public static long getSearchComparisons() {
+        return searchComparisons;
+    }
 
     private static int[] buildLPS(String pattern) {
 
         int m = pattern.length();
         int[] lps = new int[m];
+
         int len = 0;
         int i = 1;
 
         while (i < m) {
+
+            preprocessingComparisons++;
+
             if (pattern.charAt(i) == pattern.charAt(len)) {
+
                 len++;
                 lps[i] = len;
                 i++;
+
             } else {
+
                 if (len != 0) {
                     len = lps[len - 1];
                 } else {
@@ -24,11 +43,17 @@ public class KMP {
                 }
             }
         }
+
         return lps;
     }
 
     public static List<Integer> search(String text, String pattern) {
+
         List<Integer> results = new ArrayList<>();
+
+        preprocessingComparisons = 0;
+        searchComparisons = 0;
+
         int n = text.length();
         int m = pattern.length();
 
@@ -49,17 +74,21 @@ public class KMP {
         int j = 0;
 
         while (i < n) {
+
+            searchComparisons++;
+
             if (text.charAt(i) == pattern.charAt(j)) {
+
                 i++;
                 j++;
-            }
 
-            if (j == m) {
-                results.add(i - j);
-                j = lps[j - 1];
-            }
+                if (j == m) {
+                    results.add(i - j);
+                    j = lps[j - 1];
+                }
 
-            else if (i < n && text.charAt(i) != pattern.charAt(j)) {
+            } else {
+
                 if (j != 0) {
                     j = lps[j - 1];
                 } else {
@@ -67,16 +96,26 @@ public class KMP {
                 }
             }
         }
+
         return results;
     }
 
     public static void main(String[] args) {
 
-        System.out.println(search("ABABCABABC", "ABC"));
-        System.out.println(search("HELLO", "LL"));
-        System.out.println(search("AAAAA", "AA"));
-        System.out.println(search("ABCDE", "XYZ"));
-        System.out.println(search("ABC", "ABCDE"));
-        System.out.println(search("ABC", ""));
+        String text = "ABABCABABC";
+        String pattern = "ABC";
+
+        System.out.println(search(text, pattern));
+
+        System.out.println(
+                "Preprocessing comparisons: "
+                        + getPreprocessingComparisons()
+        );
+
+        System.out.println(
+                "Search comparisons: "
+                        + getSearchComparisons()
+        );
     }
 }
+

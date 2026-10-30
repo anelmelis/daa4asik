@@ -3,8 +3,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NaiveStringMatching {
+    private static long characterComparisons = 0;
+    public static long getCharacterComparisons() {
+        return characterComparisons;
+    }
+
     public static List<Integer> search(String text, String pattern) {
         List<Integer> results = new ArrayList<>();
+        characterComparisons = 0;
 
         int n = text.length();
         int m = pattern.length();
@@ -15,16 +21,22 @@ public class NaiveStringMatching {
             }
             return results;
         }
-
         if (m > n) {
             return results;
         }
 
         for (int i = 0; i <= n - m; i++) {
             int j = 0;
-            while (j < m && text.charAt(i + j) == pattern.charAt(j)) {
+
+            while (j < m) {
+                characterComparisons++;
+
+                if (text.charAt(i + j) != pattern.charAt(j)) {
+                    break;
+                }
                 j++;
             }
+
             if (j == m) {
                 results.add(i);
             }
@@ -34,11 +46,13 @@ public class NaiveStringMatching {
 
     public static void main(String[] args) {
 
-        System.out.println(search("ABABCABABC", "ABC"));
-        System.out.println(search("HELLO", "LL"));
-        System.out.println(search("AAAAA", "AA"));
-        System.out.println(search("ABCDE", "XYZ"));
-        System.out.println(search("ABC", "ABCDE"));
-        System.out.println(search("ABC", ""));
+        String text = "ABABCABABC";
+        String pattern = "ABC";
+        System.out.println(search(text, pattern));
+        System.out.println(
+                "Character comparisons: "
+                        + getCharacterComparisons()
+        );
     }
 }
+

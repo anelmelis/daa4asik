@@ -6,26 +6,50 @@ public class RabinKarp {
     private static final long BASE = 256;
     private static final long MOD = 1_000_000_007;
 
+    private static long characterComparisons = 0;
+    private static long hashComparisons = 0;
+
+    public static long getCharacterComparisons() {
+        return characterComparisons;
+    }
+
+    public static long getHashComparisons() {
+        return hashComparisons;
+    }
+
     private static long calculateHash(String str, int length) {
+
         long hash = 0;
 
         for (int i = 0; i < length; i++) {
             hash = (hash * BASE + str.charAt(i)) % MOD;
         }
+
         return hash;
     }
 
-    private static boolean verifyMatch(String text, String pattern, int start) {
+    private static boolean verifyMatch(
+            String text, String pattern, int start) {
+
         for (int i = 0; i < pattern.length(); i++) {
+
+            characterComparisons++;
+
             if (text.charAt(start + i) != pattern.charAt(i)) {
                 return false;
             }
         }
+
         return true;
     }
 
     public static List<Integer> search(String text, String pattern) {
+
         List<Integer> results = new ArrayList<>();
+
+        characterComparisons = 0;
+        hashComparisons = 0;
+
         int n = text.length();
         int m = pattern.length();
 
@@ -35,6 +59,7 @@ public class RabinKarp {
             }
             return results;
         }
+
         if (m > n) {
             return results;
         }
@@ -49,27 +74,46 @@ public class RabinKarp {
         long textHash = calculateHash(text, m);
 
         for (int i = 0; i <= n - m; i++) {
+
+            // Count hash comparisons
+            hashComparisons++;
+
             if (patternHash == textHash) {
+
                 if (verifyMatch(text, pattern, i)) {
                     results.add(i);
                 }
             }
+
+            // Rolling hash
             if (i < n - m) {
-                long outgoing = (text.charAt(i) * highestPower) % MOD;
+
+                long outgoing =
+                        (text.charAt(i) * highestPower) % MOD;
+
                 textHash = (textHash - outgoing + MOD) % MOD;
-                textHash = (textHash * BASE + text.charAt(i + m)) % MOD;
+
+                textHash =
+                        (textHash * BASE + text.charAt(i + m)) % MOD;
             }
         }
+
         return results;
     }
 
     public static void main(String[] args) {
 
-        System.out.println(search("ABABCABABC", "ABC"));
-        System.out.println(search("HELLO", "LL"));
-        System.out.println(search("AAAAA", "AA"));
-        System.out.println(search("ABCDE", "XYZ"));
-        System.out.println(search("ABC", "ABCDE"));
-        System.out.println(search("ABC", ""));
+        String text = "ABABCABABC";
+        String pattern = "ABC";
+
+        System.out.println(search(text, pattern));
+
+        System.out.println("Hash comparisons: "
+                + getHashComparisons());
+
+        System.out.println("Character comparisons: "
+                + getCharacterComparisons());
     }
 }
+
+
