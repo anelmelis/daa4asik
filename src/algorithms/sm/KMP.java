@@ -25,7 +25,9 @@ public class KMP {
 
         while (i < m) {
 
-            preprocessingComparisons++;
+            if (countingEnabled) {
+                preprocessingComparisons++;
+            }
 
             if (pattern.charAt(i) == pattern.charAt(len)) {
 
@@ -75,7 +77,9 @@ public class KMP {
 
         while (i < n) {
 
-            searchComparisons++;
+            if (countingEnabled) {
+                searchComparisons++;
+            }
 
             if (text.charAt(i) == pattern.charAt(j)) {
 
@@ -116,6 +120,11 @@ public class KMP {
                 "Search comparisons: "
                         + getSearchComparisons()
         );
+    }
+    private static boolean countingEnabled = true;
+
+    public static void setCountingEnabled(boolean enabled) {
+        countingEnabled = enabled;
     }
 }
 

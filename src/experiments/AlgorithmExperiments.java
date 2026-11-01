@@ -213,7 +213,32 @@ public class AlgorithmExperiments {
         List<Integer> search(String text, String pattern);
     }
 
-    // Benchmark string matching algorithm
+
+    private static void setCountingEnabled(
+            String algorithm, boolean enabled) {
+
+        switch (algorithm) {
+            case "Naive":
+                NaiveStringMatching.setCountingEnabled(enabled);
+                break;
+
+            case "KMP":
+                KMP.setCountingEnabled(enabled);
+                break;
+
+            case "RabinKarp":
+                RabinKarp.setCountingEnabled(enabled);
+                break;
+
+            default:
+                throw new IllegalArgumentException(
+                        "Unknown algorithm: " + algorithm
+                );
+        }
+    }
+
+
+
     private static void benchmarkSearch(
             String algorithm,
             SearchFunction function,
@@ -222,15 +247,23 @@ public class AlgorithmExperiments {
             int size,
             String scenario) {
 
+        // 1. Disable counters during timing
+        setCountingEnabled(algorithm, false);
+
         double time = averageTime(
                 () -> objectSink = function.search(text, pattern)
         );
 
-        // Separate operation-counting pass.
-        // This pass is NOT included in execution time.
+        // 2. Enable counters for a separate pass
+        setCountingEnabled(algorithm, true);
 
-        function.search(text, pattern);
+        try {
+            function.search(text, pattern);
+        } finally {
+            setCountingEnabled(algorithm, false);
+        }
 
+        // 3. Read operation counts
         long preprocessing = 0;
         long hashComparisons = 0;
         long characterComparisons = 0;
@@ -238,33 +271,28 @@ public class AlgorithmExperiments {
         switch (algorithm) {
 
             case "Naive":
-
                 characterComparisons =
                         NaiveStringMatching.getCharacterComparisons();
-
                 break;
 
             case "KMP":
-
                 preprocessing =
                         KMP.getPreprocessingComparisons();
 
                 characterComparisons =
                         KMP.getSearchComparisons();
-
                 break;
 
             case "RabinKarp":
-
                 hashComparisons =
                         RabinKarp.getHashComparisons();
 
                 characterComparisons =
                         RabinKarp.getCharacterComparisons();
-
                 break;
         }
 
+        // 4. Save results
         record(
                 algorithm,
                 size,
@@ -275,6 +303,9 @@ public class AlgorithmExperiments {
                 characterComparisons
         );
     }
+
+
+
 
     // PART B: String Matching
     private static void runStringMatching(Random random) {

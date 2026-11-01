@@ -33,7 +33,9 @@ public class RabinKarp {
 
         for (int i = 0; i < pattern.length(); i++) {
 
-            characterComparisons++;
+            if (countingEnabled) {
+                characterComparisons++;
+            }
 
             if (text.charAt(start + i) != pattern.charAt(i)) {
                 return false;
@@ -76,7 +78,9 @@ public class RabinKarp {
         for (int i = 0; i <= n - m; i++) {
 
             // Count hash comparisons
-            hashComparisons++;
+            if (countingEnabled) {
+                hashComparisons++;
+            }
 
             if (patternHash == textHash) {
 
@@ -113,6 +117,12 @@ public class RabinKarp {
 
         System.out.println("Character comparisons: "
                 + getCharacterComparisons());
+    }
+
+    private static boolean countingEnabled = true;
+
+    public static void setCountingEnabled(boolean enabled) {
+        countingEnabled = enabled;
     }
 }
 

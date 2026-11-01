@@ -29,7 +29,9 @@ public class NaiveStringMatching {
             int j = 0;
 
             while (j < m) {
-                characterComparisons++;
+                if (countingEnabled) {
+                    characterComparisons++;
+                }
 
                 if (text.charAt(i + j) != pattern.charAt(j)) {
                     break;
@@ -54,5 +56,13 @@ public class NaiveStringMatching {
                         + getCharacterComparisons()
         );
     }
+
+    private static boolean countingEnabled = true;
+
+    public static void setCountingEnabled(boolean enabled) {
+        countingEnabled = enabled;
+    }
+
+
 }
 
